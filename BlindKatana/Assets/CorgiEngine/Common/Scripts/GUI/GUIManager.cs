@@ -254,7 +254,7 @@ namespace MoreMountains.CorgiEngine
 	    	}
 
 	    }
-
+ 
 	    /// <summary>
 	    /// Updates the jetpack bar.
 	    /// </summary>

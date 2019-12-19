@@ -38,8 +38,6 @@ GameObject:
   - component: {fileID: 114837685565159230}
   - component: {fileID: 114679018816720190}
   - component: {fileID: 2857298672004294761}
-  - component: {fileID: 3842264889893522443}
-  - component: {fileID: 7019928799146193454}
   m_Layer: 9
   m_Name: Player
   m_TagString: Player
@@ -541,7 +539,7 @@ MonoBehaviour:
   AbilityStartFeedbacks: {fileID: 0}
   AbilityStopFeedbacks: {fileID: 0}
   AbilityPermitted: 1
-  LadderClimbingSpeed: 2
+  LadderClimbingSpeed: 6
   ForceRightFacing: 0
 --- !u!114 &11455680
 MonoBehaviour:
@@ -589,7 +587,8 @@ MonoBehaviour:
   AbilityStartFeedbacks: {fileID: 0}
   AbilityStopFeedbacks: {fileID: 0}
   AbilityPermitted: 1
-  InitialWeapon: {fileID: 0}
+  InitialWeapon: {fileID: 114000010078180980, guid: ce47084abcafd4ced9de2d33ec6aa2ae,
+    type: 3}
   CanPickupWeapons: 1
   WeaponAttachment: {fileID: 0}
   AutomaticallyBindAnimator: 1
@@ -913,51 +912,21 @@ MonoBehaviour:
   colors:
   - {r: 0, g: 0.21920633, b: 1, a: 0}
   - {r: 1, g: 0, b: 0, a: 0}
-  vibrationMask:
+  vibrationEnterMask:
     serializedVersion: 2
-    m_Bits: 0
---- !u!114 &3842264889893522443
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 119040}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 841b72de2996c5c40bfb394f3d0e0a98, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Feedbacks:
-  - {fileID: 7019928799146193454}
-  InitializationMode: 2
-  DebugActive: 0
---- !u!114 &7019928799146193454
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 119040}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f1326a5f4dbb874f9c42effa0befa36, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Active: 1
-  Label: Haptics
-  Chance: 100
-  Timing:
-    InitialDelay: 0
-    CooldownDuration: 0
-    NumberOfRepeats: 0
-    RepeatForever: 0
-    DelayBetweenRepeats: 1
-    Sequence: {fileID: 0}
-    TrackID: 0
-    Quantized: 0
-    TargetBPM: 120
-  DebugActive: 0
+    m_Bits: 33024
+  vibrationStayMask:
+    serializedVersion: 2
+    m_Bits: 32768
+  motorIndexEnter: 1
+  motorLevelEnter: 0.4
+  motorDurationEnter: 0.15
+  motorIndexStay: 1
+  motorLevelStay: 0.1
+  motorDurationStay: 0.1
+  motorStayInterval: 0.5
+  bulletNum: 0
+  maxBulletNum: 3
 --- !u!1 &159142
 GameObject:
   m_ObjectHideFlags: 0

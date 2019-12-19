@@ -56,13 +56,14 @@ namespace MoreMountains.CorgiEngine
 
         protected float _bufferEndsAt = 0f;
         protected bool _buffering = false;
-
+        private BKPlayer bkPlayer;
 	    // Initialization
 		protected override void Initialization () 
 		{
 			base.Initialization();
 								
 			Setup ();
+            bkPlayer = GetComponent<BKPlayer>();
 		}
 
 		/// <summary>
@@ -95,7 +96,7 @@ namespace MoreMountains.CorgiEngine
 		public override void ProcessAbility()
 		{
 			base.ProcessAbility ();
-			UpdateAmmoDisplay ();
+			//UpdateAmmoDisplay ();
             HandleBuffer();
 		}
 
@@ -169,6 +170,10 @@ namespace MoreMountains.CorgiEngine
 		/// </summary>
 		public virtual void ShootStart()
 		{
+            if (bkPlayer.bulletNum > 0)
+                bkPlayer.DecreaseNum();
+            else
+                return;
 			// if the Shoot action is enabled in the permissions, we continue, if not we do nothing.  If the player is dead we do nothing.
 			if ( !AbilityPermitted
 				|| (CurrentWeapon == null)
@@ -188,7 +193,6 @@ namespace MoreMountains.CorgiEngine
                     _bufferEndsAt = Time.time + MaximumBufferDuration;
                 }
             }
-
             PlayAbilityStartFeedbacks();
             CurrentWeapon.WeaponInputStart();
 		}

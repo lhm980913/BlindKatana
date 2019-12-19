@@ -7,17 +7,47 @@ namespace MoreMountains.CorgiEngine
 {
     public class BKPlayer : CharacterAbility
     {
+        [Header("闪烁")]
         public GameObject ring;
         public List<Color> colors;
-        public LayerMask vibrationMask;
+
+        [Header("震动")]
+        public LayerMask vibrationEnterMask;
+        public LayerMask vibrationStayMask;
+        public int motorIndexEnter;
+        public float motorLevelEnter;
+        public float motorDurationEnter;
+        public int motorIndexStay;
+        public float motorLevelStay;
+        public float motorDurationStay;
+        public float motorStayInterval;
         private Player player;
+        private float vibrationInterval;
+        private bool canStayVibrate;
+        [Header("枪")]
+        [HideInInspector]public int bulletNum;
+        public int maxBulletNum;
         protected override void Start()
         {
             base.Start();
-            char[] c = _character.PlayerID.ToCharArray() ;
+            bulletNum = 0;
+            GUIManager.Instance.UpdateAmmoDisplays(true, bulletNum, maxBulletNum, bulletNum, maxBulletNum, _character.PlayerID, true);
+            vibrationInterval = motorDurationStay;
+            SetReweird();
+        }
+        void SetReweird()
+        {
+            char[] c = _character.PlayerID.ToCharArray();
+            int playerId = (int)c[c.Length - 1] - '0' - 1;
             // Get the Player for a particular playerId
-            player = ReInput.players.GetPlayer((int)(c[c.Length-1]-1));
-
+            if (playerId == 0)
+                player = ReInput.players.GetPlayer(1);
+            else if (playerId == 1)
+            {
+                player = ReInput.players.GetPlayer(0);
+                motorLevelEnter = 1;
+                motorDurationEnter = 0.2f;
+            }
             // Some more examples:
 
             // Get the System Player
@@ -38,12 +68,28 @@ namespace MoreMountains.CorgiEngine
         void Update()
         {
             if (_inputManager.JumpButton.State.CurrentState == MMInput.ButtonStates.ButtonDown)
+            {
                 BlinkSelf();
+                AddBullet();
+            }
 
+        }
+        void AddBullet()
+        {
+            if (bulletNum < maxBulletNum)
+            {
+                bulletNum += 1;
+                GUIManager.Instance.UpdateAmmoDisplays(true, bulletNum, maxBulletNum, bulletNum, maxBulletNum, _character.PlayerID, true);
+            }
+        }
+        public void DecreaseNum()
+        {
+            bulletNum -= 1;
+            GUIManager.Instance.UpdateAmmoDisplays(true, bulletNum, maxBulletNum, bulletNum, maxBulletNum, _character.PlayerID, true);
         }
         void BlinkSelf()
         {
-            GameObject currentRing= Instantiate(ring,transform.position,Quaternion.identity);
+            GameObject currentRing = Instantiate(ring, transform.position, Quaternion.identity);
             SpriteRenderer sprite = currentRing.GetComponent<SpriteRenderer>();
             if (_character.PlayerID == "Player1")
                 sprite.color = colors[0];
@@ -52,9 +98,34 @@ namespace MoreMountains.CorgiEngine
         }
         private void OnTriggerEnter2D(Collider2D collision)
         {
-            if(MMLayers.LayerInLayerMask(collision.gameObject.layer, vibrationMask)){
-                player.SetVibration(1, 1f);
+            if (MMLayers.LayerInLayerMask(collision.gameObject.layer, vibrationEnterMask))
+            {
+                player.SetVibration(motorIndexEnter, motorLevelEnter, motorDurationEnter);
+            }
+        }
+        private void OnTriggerStay2D(Collider2D collision)
+        {
+            if (MMLayers.LayerInLayerMask(collision.gameObject.layer, vibrationStayMask))
+            {
+                vibrationInterval -= Time.deltaTime;
+                if (vibrationInterval > 0)
+                    canStayVibrate = false;
+                if (vibrationInterval < 0)
+                {
+                    //在地
+                    if (_controller.State.IsGrounded)
+                        vibrationInterval = motorStayInterval / 2f;
+                    //离地
+                    else if (_movement.CurrentState == CharacterStates.MovementStates.LadderClimbing && !_controller.State.IsGrounded)
+                        vibrationInterval = motorStayInterval;
+
+                    canStayVibrate = true;
+                }
+                if (canStayVibrate)
+                    player.SetVibration(motorIndexStay, motorLevelStay, motorDurationStay);
             }
         }
     }
+
 }
+
