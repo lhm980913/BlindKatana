@@ -95,18 +95,18 @@ MonoBehaviour:
   BarDirection: 0
   FillMode: 0
   TimeScale: 0
-  LerpForegroundBar: 1
+  LerpForegroundBar: 0
   LerpForegroundBarSpeed: 15
   Delay: 1
-  LerpDelayedBar: 1
+  LerpDelayedBar: 0
   LerpDelayedBarSpeed: 15
   PlayerID: Player1
   DelayedBar: {fileID: 0}
   ForegroundBar: {fileID: 0}
-  BumpScaleOnChange: 1
+  BumpScaleOnChange: 0
   BumpOnIncrease: 0
   BumpDuration: 0.2
-  ChangeColorWhenBumping: 1
+  ChangeColorWhenBumping: 0
   BumpColor: {r: 1, g: 1, b: 1, a: 1}
   BumpAnimationCurve:
     serializedVersion: 2

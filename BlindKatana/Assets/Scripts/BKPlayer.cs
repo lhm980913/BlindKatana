@@ -12,6 +12,7 @@ namespace MoreMountains.CorgiEngine
         public List<Color> colors;
 
         [Header("震动")]
+        public bool is8BitDo;
         public LayerMask vibrationEnterMask;
         public LayerMask vibrationStayMask;
         public int motorIndexEnter;
@@ -45,8 +46,13 @@ namespace MoreMountains.CorgiEngine
             else if (playerId == 1)
             {
                 player = ReInput.players.GetPlayer(0);
-                motorLevelEnter = 1;
-                motorDurationEnter = 0.2f;
+                if (is8BitDo)
+                {
+                    motorLevelEnter = 2;
+                    motorDurationEnter *= 2;
+                    motorLevelStay = 2;
+                    motorDurationStay *= 2;
+                }
             }
             // Some more examples:
 
