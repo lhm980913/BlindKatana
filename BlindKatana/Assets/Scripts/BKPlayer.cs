@@ -32,9 +32,19 @@ namespace MoreMountains.CorgiEngine
         private Player player;
         private float vibrationInterval;
         private bool canStayVibrate;
+        public float LadderTime =2;
+        public float AddBulletCD = 5;
+        
         [Header("枪")]
         [HideInInspector]public int bulletNum;
         public int maxBulletNum;
+        [Header("CD")]
+        [HideInInspector]public float playerOnLadderCount = 0;
+        [HideInInspector]public float AddBulletCount = 5;
+        [Header("金币")]
+        [HideInInspector]public bool playerWithCoin = false;
+        public int score = 0;
+        public GameObject Coin;
         protected override void Start()
         {
             base.Start();
@@ -42,6 +52,7 @@ namespace MoreMountains.CorgiEngine
             GUIManager.Instance.UpdateAmmoDisplays(true, bulletNum, maxBulletNum, bulletNum, maxBulletNum, _character.PlayerID, true);
             vibrationInterval = stay_motorDuration;
             SetReweird();
+            StartCoroutine(Fplayerwithcoin());
         }
         void SetReweird()
         {
@@ -84,9 +95,44 @@ namespace MoreMountains.CorgiEngine
             if (_inputManager.JumpButton.State.CurrentState == MMInput.ButtonStates.ButtonDown)
             {
                 BlinkSelf();
-                AddBullet();
+                if(AddBulletCount>AddBulletCD)
+                {
+                    AddBullet();
+                    AddBulletCount = 0;
+                }
+                
             }
+            CDcount();
 
+            
+        }
+        //玩家携带金币
+        IEnumerator Fplayerwithcoin()
+        {
+            while(true)
+            {
+                if (playerWithCoin)
+                {
+                    BlinkSelf();
+                    score += 4;
+                }
+                print(score);
+                yield return new WaitForSeconds(2.5f);
+            }
+        }
+        //公共cd计时
+        void CDcount()
+        {
+            AddBulletCount += Time.deltaTime;
+        }
+        //死亡时生成一个coin
+        void WithCoinDead()
+        {
+            if (playerWithCoin)
+            {
+                playerWithCoin = false;
+                Instantiate(Coin, transform.position, Quaternion.identity);
+            }
         }
         void AddBullet()
         {
@@ -118,6 +164,7 @@ namespace MoreMountains.CorgiEngine
         {
             if (MMLayers.LayerInLayerMask(collision.gameObject.layer, vibrationEnterMask))
             {
+                playerOnLadderCount = 0;
                 player.SetVibration(enter_motorIndex, enter_motorLevel, enter_motorDuration);
             }
         }
@@ -146,9 +193,29 @@ namespace MoreMountains.CorgiEngine
                     else
                         player.SetVibration(stay_motorIndex, stay_motorLevel, stay_motorDuration);
                 }
+                //停太久发出声音
+                if (_movement.CurrentState == CharacterStates.MovementStates.LadderClimbing && !_controller.State.IsGrounded)
+                    playerOnLadderCount += Time.deltaTime;
+                if(playerOnLadderCount> LadderTime)
+                {
+                    BlinkSelf();
+                }
+
             }
+            //吃金币
+            if (collision.tag == "coin")
+            {
+                playerWithCoin = true;
+                Destroy(collision.gameObject);
+            }
+
         }
     }
 
 }
 
+//
+//1、把换子弹cd打出到ui
+//1、把玩家得分打出到ui
+//3、函数WithCoinDead()放到玩家死亡的时候 执行一次
+//4、拿到钻石3秒无敌和100分胜利没写  近战攻击功能没写   场景自动生成钻石没写
