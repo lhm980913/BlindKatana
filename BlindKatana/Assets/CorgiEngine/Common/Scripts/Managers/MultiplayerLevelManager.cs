@@ -92,10 +92,11 @@ namespace MoreMountains.CorgiEngine
 		protected virtual IEnumerator RespawnPlayer(Character player)
 		{
             GameObject newRip = Instantiate(rip, player.transform.position+new Vector3(0,0.5f,0), Quaternion.identity);
+            BKPlayer bk = player.GetComponent<BKPlayer>();
+            bk.DisplayCircle();
 			yield return new WaitForSeconds (respawnTime);
             newRip.GetComponent<SpriteRenderer>().DOFade(0, 1);
-            player.RespawnAt(Checkpoints[UnityEngine.Random.Range(0, Checkpoints.Count - 1)].transform, Character.FacingDirections.Right);
-			//Destroy (player.gameObject);
+            player.RespawnAt(Checkpoints[UnityEngine.Random.Range(0, Checkpoints.Count)].transform, Character.FacingDirections.Right);
 		}
 	}
 }

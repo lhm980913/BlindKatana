@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using MoreMountains.Tools;
 using Rewired;
+using DG.Tweening;
 namespace MoreMountains.CorgiEngine
 {
     public class BKPlayer : CharacterAbility
     {
+        [HideInInspector]public int playerId;
         [Header("闪烁")]
-        public GameObject ring;
+        public GameObject blinkRing;
+        public GameObject circle;
         public List<Color> colors;
 
         [Header("震动")]
@@ -43,7 +46,7 @@ namespace MoreMountains.CorgiEngine
         void SetReweird()
         {
             char[] c = _character.PlayerID.ToCharArray();
-            int playerId = (int)c[c.Length - 1] - '0' - 1;
+            playerId = (int)c[c.Length - 1] - '0' - 1;
             // Get the Player for a particular playerId
             if (playerId == 0)
                 player = ReInput.players.GetPlayer(1);
@@ -98,14 +101,18 @@ namespace MoreMountains.CorgiEngine
             bulletNum -= 1;
             GUIManager.Instance.UpdateAmmoDisplays(true, bulletNum, maxBulletNum, bulletNum, maxBulletNum, _character.PlayerID, true);
         }
-        void BlinkSelf()
+         void BlinkSelf()
         {
-            GameObject currentRing = Instantiate(ring, transform.position, Quaternion.identity);
+            GameObject currentRing = Instantiate(blinkRing, transform.position, Quaternion.identity);
             SpriteRenderer sprite = currentRing.GetComponent<SpriteRenderer>();
-            if (_character.PlayerID == "Player1")
-                sprite.color = colors[0];
-            if (_character.PlayerID == "Player2")
-                sprite.color = colors[1];
+                sprite.color = colors[playerId];
+        }
+        public void DisplayCircle()
+        {
+            GameObject currentCircle = Instantiate(circle, transform.position, Quaternion.identity);
+            SpriteRenderer sprite = currentCircle.GetComponent<SpriteRenderer>();
+            sprite.color = colors[playerId];
+            sprite.DOFade(1, 0);
         }
         private void OnTriggerEnter2D(Collider2D collision)
         {

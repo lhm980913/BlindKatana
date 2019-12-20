@@ -695,11 +695,14 @@ MonoBehaviour:
   AbilityStartFeedbacks: {fileID: 0}
   AbilityStopFeedbacks: {fileID: 0}
   AbilityPermitted: 1
-  ring: {fileID: 979789761992722492, guid: 52cf0843edf11bd4c9a459bed24f9b31, type: 3}
+  playerId: 0
+  blinkRing: {fileID: 979789761992722492, guid: 52cf0843edf11bd4c9a459bed24f9b31,
+    type: 3}
+  circle: {fileID: 979789761992722492, guid: cdff596573b546c4793839f6b565fbe8, type: 3}
   colors:
   - {r: 0.12941177, g: 0.5882353, b: 0.9529412, a: 0}
   - {r: 0.95686275, g: 0.2627451, b: 0.21176471, a: 0}
-  is8BitDo: 0
+  is8BitDo: 1
   vibrationEnterMask:
     serializedVersion: 2
     m_Bits: 33024
