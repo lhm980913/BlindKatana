@@ -5,7 +5,7 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using MoreMountains.Tools;
-
+using DG.Tweening;
 namespace MoreMountains.CorgiEngine
 {	
 	/// <summary>
@@ -13,7 +13,9 @@ namespace MoreMountains.CorgiEngine
 	/// </summary>
 	[AddComponentMenu("Corgi Engine/Managers/Multiplayer Level Manager")]
 	public class MultiplayerLevelManager : LevelManager
-	{	
+	{
+        public float respawnTime;
+        public GameObject rip;
 		/// <summary>
 		/// Checks the multiplayer end game conditions
 		/// </summary>
@@ -76,10 +78,10 @@ namespace MoreMountains.CorgiEngine
 				// we kill the character
 				characterHealth.Kill ();
 
-				StartCoroutine (RemovePlayer (player));
+				StartCoroutine (RespawnPlayer(player));
 			}
 
-			CheckMultiplayerEndGame ();
+			//CheckMultiplayerEndGame ();
 		}
 
 		/// <summary>
@@ -87,10 +89,13 @@ namespace MoreMountains.CorgiEngine
 		/// </summary>
 		/// <returns>The player.</returns>
 		/// <param name="player">Player.</param>
-		protected virtual IEnumerator RemovePlayer(Character player)
+		protected virtual IEnumerator RespawnPlayer(Character player)
 		{
-			yield return new WaitForSeconds (0.01f);
-			Destroy (player.gameObject);
+            GameObject newRip = Instantiate(rip, player.transform.position+new Vector3(0,0.5f,0), Quaternion.identity);
+			yield return new WaitForSeconds (respawnTime);
+            newRip.GetComponent<SpriteRenderer>().DOFade(0, 1);
+            player.RespawnAt(Checkpoints[UnityEngine.Random.Range(0, Checkpoints.Count - 1)].transform, Character.FacingDirections.Right);
+			//Destroy (player.gameObject);
 		}
 	}
 }

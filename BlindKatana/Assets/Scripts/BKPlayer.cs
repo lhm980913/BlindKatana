@@ -15,13 +15,17 @@ namespace MoreMountains.CorgiEngine
         public bool is8BitDo;
         public LayerMask vibrationEnterMask;
         public LayerMask vibrationStayMask;
-        public int motorIndexEnter;
-        public float motorLevelEnter;
-        public float motorDurationEnter;
-        public int motorIndexStay;
-        public float motorLevelStay;
-        public float motorDurationStay;
-        public float motorStayInterval;
+        public int enter_motorIndex;
+        public float enter_motorLevel;
+        public float enter_motorDuration;
+        public int stay_motorIndex;
+        public float stay_motorLevel;
+        public float stay_motorDuration;
+        public float stay_motorInterval;
+        public int move_motorIndex;
+        public float move_motorLevel;
+        public float move_motorDuration;
+        public float move_motorInterval;
         private Player player;
         private float vibrationInterval;
         private bool canStayVibrate;
@@ -33,7 +37,7 @@ namespace MoreMountains.CorgiEngine
             base.Start();
             bulletNum = 0;
             GUIManager.Instance.UpdateAmmoDisplays(true, bulletNum, maxBulletNum, bulletNum, maxBulletNum, _character.PlayerID, true);
-            vibrationInterval = motorDurationStay;
+            vibrationInterval = stay_motorDuration;
             SetReweird();
         }
         void SetReweird()
@@ -48,10 +52,11 @@ namespace MoreMountains.CorgiEngine
                 player = ReInput.players.GetPlayer(0);
                 if (is8BitDo)
                 {
-                    motorLevelEnter = 2;
-                    motorDurationEnter *= 2;
-                    motorLevelStay = 2;
-                    motorDurationStay *= 2;
+                    enter_motorLevel = 1;
+                    enter_motorDuration *= 2;
+                    stay_motorLevel = 1;
+                    stay_motorDuration *= 2;
+                    move_motorLevel = 1;
                 }
             }
             // Some more examples:
@@ -106,29 +111,34 @@ namespace MoreMountains.CorgiEngine
         {
             if (MMLayers.LayerInLayerMask(collision.gameObject.layer, vibrationEnterMask))
             {
-                player.SetVibration(motorIndexEnter, motorLevelEnter, motorDurationEnter);
+                player.SetVibration(enter_motorIndex, enter_motorLevel, enter_motorDuration);
             }
         }
         private void OnTriggerStay2D(Collider2D collision)
         {
             if (MMLayers.LayerInLayerMask(collision.gameObject.layer, vibrationStayMask))
             {
+                bool isMoveInLadder = false;
                 vibrationInterval -= Time.deltaTime;
                 if (vibrationInterval > 0)
                     canStayVibrate = false;
                 if (vibrationInterval < 0)
                 {
-                    //在地
-                    if (_controller.State.IsGrounded)
-                        vibrationInterval = motorStayInterval / 2f;
-                    //离地
-                    else if (_movement.CurrentState == CharacterStates.MovementStates.LadderClimbing && !_controller.State.IsGrounded)
-                        vibrationInterval = motorStayInterval;
-
+                    vibrationInterval = stay_motorInterval;
+                    if (_movement.CurrentState == CharacterStates.MovementStates.LadderClimbing && !_controller.State.IsGrounded && _controller.Speed.y != 0)
+                    {
+                        vibrationInterval = move_motorInterval;
+                        isMoveInLadder = true;
+                    }
                     canStayVibrate = true;
                 }
                 if (canStayVibrate)
-                    player.SetVibration(motorIndexStay, motorLevelStay, motorDurationStay);
+                {
+                    if (isMoveInLadder)
+                        player.SetVibration(move_motorIndex, move_motorLevel, move_motorDuration);
+                    else
+                        player.SetVibration(stay_motorIndex, stay_motorLevel, stay_motorDuration);
+                }
             }
         }
     }
