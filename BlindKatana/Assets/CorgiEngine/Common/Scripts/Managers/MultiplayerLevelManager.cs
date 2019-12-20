@@ -14,12 +14,14 @@ namespace MoreMountains.CorgiEngine
 	[AddComponentMenu("Corgi Engine/Managers/Multiplayer Level Manager")]
 	public class MultiplayerLevelManager : LevelManager
 	{
+     
         public float respawnTime;
         public GameObject rip;
 		/// <summary>
 		/// Checks the multiplayer end game conditions
 		/// </summary>
-		protected virtual void CheckMultiplayerEndGame()
+        ///
+		public virtual void CheckMultiplayerEndGame()
 		{
 			int stillAlive = 0;
 			string winnerID = "";
@@ -36,13 +38,16 @@ namespace MoreMountains.CorgiEngine
 				StartCoroutine(MultiplayerEndGame (winnerID));
 			}
 		}
-
-		/// <summary>
-		/// Handles the endgame
-		/// </summary>
-		/// <returns>The end game.</returns>
-		/// <param name="winnerID">Winner I.</param>
-		protected virtual IEnumerator MultiplayerEndGame(string winnerID)
+        public override void CheckEnd(string playerID)
+        {
+            StartCoroutine(MultiplayerEndGame(playerID));
+        }
+        /// <summary>
+        /// Handles the endgame
+        /// </summary>
+        /// <returns>The end game.</returns>
+        /// <param name="winnerID">Winner I.</param>
+        protected virtual IEnumerator MultiplayerEndGame(string winnerID)
 		{
 			// we wait for 1 second
 			yield return new WaitForSeconds (1f);
@@ -58,9 +63,14 @@ namespace MoreMountains.CorgiEngine
 				GUIManager.Instance.GetComponent<MultiplayerGUIManager> ().SetMultiplayerEndgameText (winnerID+" WINS");
 			}
 			// we wait for 2 seconds
-			yield return new WaitForSeconds (2f);
+			yield return new WaitForSeconds (3f);
+            if (winnerID == "Player1")
+                dontDes.instance.Player1Score();
+            else
+                dontDes.instance.Player2Score();
+            dontDes.instance.NextLevel();
 			// we reload the current scene to start a new game
-			LoadingSceneManager.LoadScene(SceneManager.GetActiveScene ().name);
+			//LoadingSceneManager.LoadScene(SceneManager.GetActiveScene ().name);
 		}
 
 		/// <summary>
@@ -94,6 +104,7 @@ namespace MoreMountains.CorgiEngine
             GameObject newRip = Instantiate(rip, player.transform.position+new Vector3(0,0.5f,0), Quaternion.identity);
             BKPlayer bk = player.GetComponent<BKPlayer>();
             bk.DisplayCircle();
+            bk.WithCoinDead();
 			yield return new WaitForSeconds (respawnTime);
             newRip.GetComponent<SpriteRenderer>().DOFade(0, 1);
             player.RespawnAt(Checkpoints[UnityEngine.Random.Range(0, Checkpoints.Count)].transform, Character.FacingDirections.Right);

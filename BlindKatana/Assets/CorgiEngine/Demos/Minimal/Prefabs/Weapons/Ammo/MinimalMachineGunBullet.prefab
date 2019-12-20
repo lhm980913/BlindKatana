@@ -147,7 +147,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BoundsBasedOn: 1
-  LifeTime: 5
+  LifeTime: 2
   FaceDirection: 1
   Speed: 200
   Acceleration: 0
@@ -205,12 +205,9 @@ MonoBehaviour:
   InitialHealth: 10
   MaximumHealth: 10
   Invulnerable: 0
-  DamageEffect: {fileID: 0}
-  DamageSfx: {fileID: 0}
   DamageFeedbacks: {fileID: 6827168327657764305}
   FlickerSpriteOnHit: 1
   ImmuneToKnockback: 0
-  DeathEffect: {fileID: 100000, guid: fe2e3926fa08f87458a401c9fafe1e98, type: 3}
   DeathFeedbacks: {fileID: 5899266940824776853}
   DestroyOnDeath: 1
   DelayBeforeDestruction: 0
@@ -289,8 +286,13 @@ MonoBehaviour:
     NumberOfRepeats: 0
     RepeatForever: 0
     DelayBetweenRepeats: 1
+    Sequence: {fileID: 0}
+    TrackID: 0
+    Quantized: 0
+    TargetBPM: 120
   DebugActive: 0
   Mode: 1
+  CachedRecycle: 1
   ParticlesPrefab: {fileID: 19800000, guid: fe2e3926fa08f87458a401c9fafe1e98, type: 3}
   InstantiateParticlesPosition: {fileID: 0}
   NestParticles: 0

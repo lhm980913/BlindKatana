@@ -152,7 +152,10 @@ namespace MoreMountains.CorgiEngine
 				return;
 			}
 		}
+        public virtual void CheckEnd(string playerID)
+        {
 
+        }
 		/// <summary>
 		/// Initialization
 		/// </summary>

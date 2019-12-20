@@ -171,9 +171,15 @@ namespace MoreMountains.CorgiEngine
 		public virtual void ShootStart()
 		{
             if (bkPlayer.bulletNum > 0)
+            {
                 bkPlayer.DecreaseNum();
+                bkPlayer.BlinkSelf();
+            }
             else
+            {
+                //bkPlayer.player.SetVibration(0, 0.2f, 0.2f);
                 return;
+            }
 			// if the Shoot action is enabled in the permissions, we continue, if not we do nothing.  If the player is dead we do nothing.
 			if ( !AbilityPermitted
 				|| (CurrentWeapon == null)

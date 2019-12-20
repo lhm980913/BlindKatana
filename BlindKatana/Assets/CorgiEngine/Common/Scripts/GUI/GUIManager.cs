@@ -13,13 +13,15 @@ namespace MoreMountains.CorgiEngine
     {
         [Header("Bindings")]
 		/// the game object that contains the heads up display (avatar, health, points...)
-		public GameObject HUD;
-		/// the jetpack bar
-		public MMProgressBar[] HealthBars;
+		public GameObject HUD; public Text timeText;
+        /// the jetpack bar
+        public MMProgressBar[] HealthBars;
 		/// the jetpack bar
 		public MMProgressBar[] JetPackBars;
 		/// the panels and bars used to display current weapon ammo
 		public AmmoDisplay[] AmmoDisplays;
+        public MMProgressBar[] AmmoCDs;
+        public AmmoDisplay[] scoreTexts;
 		/// the pause screen game object
 		public GameObject PauseScreen;	
 		/// the time splash gameobject
@@ -58,11 +60,18 @@ namespace MoreMountains.CorgiEngine
 				_initialButtonsAlpha=Buttons.alpha;
 			}
 		}
-
-	    /// <summary>
-	    /// Initialization
-	    /// </summary>
-	    protected virtual void Start()
+        public void UpdateTimeText(int time)
+        {
+            if (time <= 0)
+            {
+                timeText.transform.parent.gameObject.SetActive(false);
+            }
+            timeText.text = time.ToString();
+        }
+        /// <summary>
+        /// Initialization
+        /// </summary>
+        protected virtual void Start()
 		{
 			RefreshPoints();
 		}
@@ -254,15 +263,29 @@ namespace MoreMountains.CorgiEngine
 	    	}
 
 	    }
- 
-	    /// <summary>
-	    /// Updates the jetpack bar.
-	    /// </summary>
-	    /// <param name="currentFuel">Current fuel.</param>
-	    /// <param name="minFuel">Minimum fuel.</param>
-	    /// <param name="maxFuel">Max fuel.</param>
-	    /// <param name="playerID">Player I.</param>
-		public virtual void UpdateJetpackBar(float currentFuel, float minFuel, float maxFuel,string playerID)
+        public virtual void UpdateAmmoCD(float currentCD, float waitTime, string playerID)
+        {
+            if (AmmoCDs == null) { return; }
+            if (AmmoCDs.Length <= 0) { return; }
+
+            foreach (MMProgressBar ammoCd in AmmoCDs)
+            {
+                if (ammoCd == null) { continue; }
+                if (ammoCd.PlayerID == playerID)
+                {
+                    ammoCd.UpdateBar(currentCD,0,waitTime);
+                }
+            }
+
+        }
+        /// <summary>
+        /// Updates the jetpack bar.
+        /// </summary>
+        /// <param name="currentFuel">Current fuel.</param>
+        /// <param name="minFuel">Minimum fuel.</param>
+        /// <param name="maxFuel">Max fuel.</param>
+        /// <param name="playerID">Player I.</param>
+        public virtual void UpdateJetpackBar(float currentFuel, float minFuel, float maxFuel,string playerID)
 		{
 			if (JetPackBars == null)
 			{
@@ -305,7 +328,22 @@ namespace MoreMountains.CorgiEngine
 				}    
 			}
 		}
-		
+		public virtual void UpdateScoreText(string s,string playerID)
+        {
+            if (scoreTexts == null)
+            {
+                return;
+            }
+
+            foreach (AmmoDisplay ammoDisplay in scoreTexts)
+            {
+                if (ammoDisplay == null) { return; }
+                if (ammoDisplay.PlayerID == playerID)
+                {
+                    ammoDisplay.UpdateTextDisplay(s);
+                }
+            }
+        }
 		/// <summary>
 		/// Sets the level name in the HUD
 		/// </summary>

@@ -4,13 +4,16 @@ using UnityEngine;
 using MoreMountains.Tools;
 using Rewired;
 using DG.Tweening;
+using MoreMountains.Feedbacks;
 namespace MoreMountains.CorgiEngine
 {
     public class BKPlayer : CharacterAbility
     {
+        public MMFeedbacks reloadSound;
         [HideInInspector]public int playerId;
         [Header("闪烁")]
         public GameObject blinkRing;
+        public GameObject blinkDiamond;
         public GameObject circle;
         public List<Color> colors;
 
@@ -29,30 +32,39 @@ namespace MoreMountains.CorgiEngine
         public float move_motorLevel;
         public float move_motorDuration;
         public float move_motorInterval;
-        private Player player;
+        public Player player;
         private float vibrationInterval;
         private bool canStayVibrate;
         public float LadderTime =2;
+        public float ladderBlinkInterval;
         public float AddBulletCD = 5;
         
         [Header("枪")]
         [HideInInspector]public int bulletNum;
         public int maxBulletNum;
+        public GameObject addBullet;
         [Header("CD")]
         [HideInInspector]public float playerOnLadderCount = 0;
-        [HideInInspector]public float AddBulletCount = 5;
+        [HideInInspector]public float AddBulletCount=0 ;
         [Header("金币")]
         [HideInInspector]public bool playerWithCoin = false;
-        public int score = 0;
+        public float scoreAddInterval;
+        public float blinkInterval;
+        [HideInInspector] public int score = 0;
         public GameObject Coin;
+        private bool isLadderBlink;
+        public LayerMask shakeLayer;
         protected override void Start()
         {
             base.Start();
             bulletNum = 0;
+            AddBulletCount = AddBulletCD;
+            GUIManager.Instance.UpdateAmmoCD(AddBulletCount, AddBulletCD, _character.PlayerID);
             GUIManager.Instance.UpdateAmmoDisplays(true, bulletNum, maxBulletNum, bulletNum, maxBulletNum, _character.PlayerID, true);
             vibrationInterval = stay_motorDuration;
             SetReweird();
             StartCoroutine(Fplayerwithcoin());
+            StartCoroutine(FplayerwithcoinBlink());
         }
         void SetReweird()
         {
@@ -95,41 +107,55 @@ namespace MoreMountains.CorgiEngine
             if (_inputManager.JumpButton.State.CurrentState == MMInput.ButtonStates.ButtonDown)
             {
                 BlinkSelf();
-                if(AddBulletCount>AddBulletCD)
+                if (AddBulletCount >= AddBulletCD && bulletNum < 3)
                 {
                     AddBullet();
                     AddBulletCount = 0;
                 }
-                
             }
-            CDcount();
-
-            
+            if (bulletNum <= 3 && AddBulletCount<AddBulletCD)
+                CDcount();
+            if (score >= 100)
+                MultiplayerLevelManager.Instance.CheckEnd(_character.PlayerID);
         }
-        //玩家携带金币
+        //玩家携带金币加分
         IEnumerator Fplayerwithcoin()
         {
             while(true)
             {
+                if (playerWithCoin && score<=100)
+                {
+                    score = Mathf.Clamp(score + 1,0,100);
+                    GUIManager.Instance.UpdateScoreText(score + "%", _character.PlayerID);
+                }
+                yield return new WaitForSeconds(scoreAddInterval);
+            }
+        }  
+        //玩家携带闪烁
+        IEnumerator FplayerwithcoinBlink()
+        {
+            while (true)
+            {
                 if (playerWithCoin)
                 {
                     BlinkSelf();
-                    score += 4;
+                    Instantiate(blinkDiamond, transform.position+Vector3.up, Quaternion.identity);
                 }
-                print(score);
-                yield return new WaitForSeconds(2.5f);
+                yield return new WaitForSeconds(blinkInterval);
             }
         }
         //公共cd计时
         void CDcount()
         {
-            AddBulletCount += Time.deltaTime;
+            AddBulletCount = Mathf.Clamp( Time.deltaTime+ AddBulletCount,0,AddBulletCD);
+            GUIManager.Instance.UpdateAmmoCD(AddBulletCount,AddBulletCD,_character.PlayerID);
         }
         //死亡时生成一个coin
-        void WithCoinDead()
+        public void WithCoinDead()
         {
             if (playerWithCoin)
             {
+
                 playerWithCoin = false;
                 Instantiate(Coin, transform.position, Quaternion.identity);
             }
@@ -139,6 +165,8 @@ namespace MoreMountains.CorgiEngine
             if (bulletNum < maxBulletNum)
             {
                 bulletNum += 1;
+                reloadSound.PlayFeedbacks();
+                Instantiate(addBullet, transform.position, Quaternion.identity);
                 GUIManager.Instance.UpdateAmmoDisplays(true, bulletNum, maxBulletNum, bulletNum, maxBulletNum, _character.PlayerID, true);
             }
         }
@@ -147,7 +175,7 @@ namespace MoreMountains.CorgiEngine
             bulletNum -= 1;
             GUIManager.Instance.UpdateAmmoDisplays(true, bulletNum, maxBulletNum, bulletNum, maxBulletNum, _character.PlayerID, true);
         }
-         void BlinkSelf()
+        public void BlinkSelf()
         {
             GameObject currentRing = Instantiate(blinkRing, transform.position, Quaternion.identity);
             SpriteRenderer sprite = currentRing.GetComponent<SpriteRenderer>();
@@ -166,6 +194,10 @@ namespace MoreMountains.CorgiEngine
             {
                 playerOnLadderCount = 0;
                 player.SetVibration(enter_motorIndex, enter_motorLevel, enter_motorDuration);
+            }
+            if (MMLayers.LayerInLayerMask(collision.gameObject.layer, shakeLayer))
+            {
+                collision.gameObject.transform.DOShakePosition(0.3f, 0.2f, 10, 90, false, false);
             }
         }
         private void OnTriggerStay2D(Collider2D collision)
@@ -198,12 +230,25 @@ namespace MoreMountains.CorgiEngine
                     playerOnLadderCount += Time.deltaTime;
                 if(playerOnLadderCount> LadderTime)
                 {
-                    BlinkSelf();
+                    if(!isLadderBlink)
+                    StartCoroutine(LadderBlink(collision));
                 }
 
             }
+            IEnumerator LadderBlink(Collider2D c)
+            {
+                isLadderBlink = true;
+                LadderShake shake = c.GetComponent<LadderShake>();
+                while (_movement.CurrentState == CharacterStates.MovementStates.LadderClimbing && !_controller.State.IsGrounded)
+                {
+                    BlinkSelf();
+                    shake.Shake();
+                    yield return new WaitForSeconds(ladderBlinkInterval);
+                }
+                isLadderBlink = false;
+            }
             //吃金币
-            if (collision.tag == "coin")
+            if (collision.tag == "coin"&&_health.CurrentHealth>0)
             {
                 playerWithCoin = true;
                 Destroy(collision.gameObject);
@@ -217,5 +262,4 @@ namespace MoreMountains.CorgiEngine
 //
 //1、把换子弹cd打出到ui
 //1、把玩家得分打出到ui
-//3、函数WithCoinDead()放到玩家死亡的时候 执行一次
 //4、拿到钻石3秒无敌和100分胜利没写  近战攻击功能没写   场景自动生成钻石没写
