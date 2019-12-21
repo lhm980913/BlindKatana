@@ -31,7 +31,7 @@ GameObject:
   m_Layer: 9
   m_Name: Player
   m_TagString: Player
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -714,7 +714,7 @@ MonoBehaviour:
   playerOnLadderCount: 0
   AddBulletCount: 5
   playerWithCoin: 0
-  scoreAddInterval: 1
+  scoreAddInterval: 0.5
   blinkInterval: 2
   score: 0
   Coin: {fileID: 2239446332000099062, guid: 4185fdba466c84449a6e65794f90b85c, type: 3}
@@ -5679,8 +5679,8 @@ MonoBehaviour:
   RandomSfx: []
   PlayMethod: 0
   PoolSize: 10
-  MinVolume: 1
-  MaxVolume: 1
+  MinVolume: 7
+  MaxVolume: 7
   MinPitch: 1
   MaxPitch: 1
   SfxAudioMixerGroup: {fileID: 0}

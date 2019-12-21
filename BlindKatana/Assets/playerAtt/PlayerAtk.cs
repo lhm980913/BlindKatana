@@ -65,6 +65,7 @@ public class PlayerAtk : CharacterAbility
         effect.transform.localScale = Vector3.one * 2 * radius;
         StartCoroutine(AttDisable());
         feedbacks.PlayFeedbacks();
+        GetComponent<BKPlayer>().BlinkSelf();
         Destroy(effect, 2);
     }
     IEnumerator AttDisable()

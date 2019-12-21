@@ -72,18 +72,19 @@ namespace MoreMountains.CorgiEngine
             playerId = (int)c[c.Length - 1] - '0' - 1;
             // Get the Player for a particular playerId
             if (playerId == 0)
-                player = ReInput.players.GetPlayer(1);
+                player = ReInput.players.GetPlayer(0);
             else if (playerId == 1)
             {
-                player = ReInput.players.GetPlayer(0);
-                if (is8BitDo)
-                {
-                    enter_motorLevel = 1;
-                    enter_motorDuration *= 2;
-                    stay_motorLevel = 1;
-                    stay_motorDuration *= 2;
-                    move_motorLevel = 1;
-                }
+                player = ReInput.players.GetPlayer(1);
+
+            }
+            if (is8BitDo)
+            {
+                enter_motorLevel = 1;
+                enter_motorDuration *= 2;
+                stay_motorLevel = 1;
+                stay_motorDuration *= 2;
+                move_motorLevel = 1;
             }
             // Some more examples:
 
@@ -251,6 +252,8 @@ namespace MoreMountains.CorgiEngine
             if (collision.tag == "coin"&&_health.CurrentHealth>0)
             {
                 playerWithCoin = true;
+                BlinkSelf();
+                Instantiate(blinkDiamond, transform.position + Vector3.up, Quaternion.identity);
                 Destroy(collision.gameObject);
             }
 

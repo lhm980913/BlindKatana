@@ -85,15 +85,15 @@ namespace MoreMountains.CorgiEngine
 				return;
 			}
 
-			for (int i=0; i < LevelManager.Instance.Checkpoints.Count; i++)
+		/*	for (int i=0; i < LevelManager.Instance.Checkpoints.Count; i++)
 			{
 				// we draw a line towards the next point in the path
 				if ((i+1) < LevelManager.Instance.Checkpoints.Count)
 				{
 					Gizmos.color = Color.green;
 					Gizmos.DrawLine(LevelManager.Instance.Checkpoints[i].transform.position,LevelManager.Instance.Checkpoints[i+1].transform.position);
-				}
-			}
+				}*/
+			
 			#endif
 		}
 	}

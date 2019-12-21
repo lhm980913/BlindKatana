@@ -9705,8 +9705,8 @@ MonoBehaviour:
   RandomSfx: []
   PlayMethod: 1
   PoolSize: 10
-  MinVolume: 0.1
-  MaxVolume: 0.1
+  MinVolume: 0.5
+  MaxVolume: 0.5
   MinPitch: 1
   MaxPitch: 1
   SfxAudioMixerGroup: {fileID: 0}
@@ -10137,8 +10137,8 @@ MonoBehaviour:
   RandomSfx: []
   PlayMethod: 0
   PoolSize: 10
-  MinVolume: 0.1
-  MaxVolume: 0.1
+  MinVolume: 0.5
+  MaxVolume: 0.5
   MinPitch: 1
   MaxPitch: 1
   SfxAudioMixerGroup: {fileID: 0}
@@ -10220,8 +10220,8 @@ MonoBehaviour:
   RandomSfx: []
   PlayMethod: 0
   PoolSize: 10
-  MinVolume: 0.1
-  MaxVolume: 0.1
+  MinVolume: 0.5
+  MaxVolume: 0.5
   MinPitch: 1
   MaxPitch: 1
   SfxAudioMixerGroup: {fileID: 0}

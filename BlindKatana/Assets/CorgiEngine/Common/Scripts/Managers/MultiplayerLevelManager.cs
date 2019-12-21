@@ -64,11 +64,14 @@ namespace MoreMountains.CorgiEngine
 			}
 			// we wait for 2 seconds
 			yield return new WaitForSeconds (3f);
-            if (winnerID == "Player1")
-                dontDes.instance.Player1Score();
-            else
-                dontDes.instance.Player2Score();
-            dontDes.instance.NextLevel();
+            if (dontDes.instance)
+            {
+                if (winnerID == "Player1")
+                    dontDes.instance.Player1Score();
+                else
+                    dontDes.instance.Player2Score();
+                dontDes.instance.NextLevel();
+            }
 			// we reload the current scene to start a new game
 			//LoadingSceneManager.LoadScene(SceneManager.GetActiveScene ().name);
 		}
