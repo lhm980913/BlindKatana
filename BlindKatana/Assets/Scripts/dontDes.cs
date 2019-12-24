@@ -6,8 +6,8 @@ using MoreMountains.CorgiEngine;
 using UnityEngine.UI;
 public class dontDes : MonoBehaviour
 {
-    public bool player1Win;
-    public bool player2Win;
+    public bool player1Win =false;
+    public bool player2Win =false;
 
     int[] levelList= {1,2,3};
     int nowlevel = 1;
@@ -45,6 +45,12 @@ public class dontDes : MonoBehaviour
             SceneManager.LoadScene(0);
             randomLevel();
             nowlevel = 1;
+            player1Win = false;
+            player2Win = false;
+        }
+        if (Input.GetKeyDown(KeyCode.Home)&& SceneManager.GetActiveScene().buildIndex==0)
+        {
+            NextLevel();
         }
 
     }
@@ -78,8 +84,10 @@ public class dontDes : MonoBehaviour
         {
             //MultiplayerLevelManager.Instance.CheckEnd("Player1");
             SceneManager.LoadScene(4);
-            Text winText = Instantiate(win, transform).GetComponentInChildren<Text>();
+            GameObject aaa = Instantiate(win, transform);
+            Text winText = aaa.GetComponentInChildren<Text>();
             winText.text = "Player1 Win !";
+            Destroy(aaa, 2);
         }
     }
 
@@ -94,8 +102,10 @@ public class dontDes : MonoBehaviour
         {
             //MultiplayerLevelManager.Instance.CheckEnd("Player2");
             SceneManager.LoadScene(4);
-            Text winText = Instantiate(win, transform).GetComponentInChildren<Text>();
+            GameObject aaa = Instantiate(win, transform);
+            Text winText = aaa.GetComponentInChildren<Text>();
             winText.text = "Player2 Win !";
+            Destroy(aaa, 2);
         }
     }
 

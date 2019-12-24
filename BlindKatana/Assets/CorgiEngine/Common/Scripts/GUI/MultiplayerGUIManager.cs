@@ -24,7 +24,7 @@ namespace MoreMountains.CorgiEngine
             {
                 if (dontDes.instance.player1Win)
                     crowns[0].enabled = true;
-                else if (dontDes.instance.player2Win)
+                if (dontDes.instance.player2Win)
                     crowns[1].enabled = true;
             }
         }
